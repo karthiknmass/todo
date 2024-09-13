@@ -11,17 +11,13 @@ interface Todo {
 })
 export class TodoService {
 
-  constructor() { }
-
   private todos: Todo[] = [];
-  private idCounter = 1;
+  private static readonly INITIAL_TODO_ID = 1;
+
+  private idCounter: number = TodoService.INITIAL_TODO_ID;
 
   addTodo(title: string): void {
-    const todo: Todo = {
-      id: this.idCounter++,
-      title,
-      completed: false
-    };
+    const todo = this.createTodoObject(title);
     this.todos.push(todo);
   }
 
@@ -30,13 +26,26 @@ export class TodoService {
   }
 
   markTodoAsCompleted(id: number): void {
-    const todo = this.todos.find(t => t.id === id);
+    const todo = this.findTodoById(id);
     if (todo) {
       todo.completed = true;
     }
   }
 
   removeTodo(id: number): void {
-    this.todos = this.todos.filter(t => t.id !== id);
+    this.todos = this.todos.filter(todo => todo.id !== id);
+  }
+
+  // Private helper methods to keep code clean
+  private createTodoObject(title: string): Todo {
+    return {
+      id: this.idCounter++,
+      title,
+      completed: false
+    };
+  }
+
+  private findTodoById(id: number): Todo | undefined {
+    return this.todos.find(todo => todo.id === id);
   }
 }
